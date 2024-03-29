@@ -9,8 +9,6 @@ router.use('/add-product/new-product', (req, res, next) => {
 
 // We want this middleware to ne executed only on POST request, not on GET request.
 // For this, instead of .use we can use .post. There is also .get for GET requestes.
-
-// this is a change
 router.post("/product", (req, res, next) => {
     console.log(req.body);
     res.redirect('/');
