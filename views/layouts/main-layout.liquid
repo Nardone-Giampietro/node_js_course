@@ -1,0 +1,12 @@
+{%  render 'head', pageTitle: pageTitle %}
+{% block styles %}{% endblock %}
+</head>
+    <body>
+        <header class="main-header">
+            {% render 'navigation', path: path %}
+        </header>
+        <main>
+
+{% block content %}{% endblock %}
+
+{% render 'end' %}
