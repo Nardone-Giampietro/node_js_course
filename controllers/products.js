@@ -12,7 +12,6 @@ exports.getProducts = (req, res, next) => {
 };
 
 exports.getProduct = (req, res, next) => {
-    // This parameter is the one and thas been dynamically passed 
     const productId = req.params.productID;
     Product.findById(productId)
         .then(foundProduct => {

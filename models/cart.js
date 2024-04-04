@@ -1,14 +1,9 @@
-// The Cart class needs to store the products Ids that are inside the cart, and also the quantity for each
-// product
-
 const fs = require('fs');
 const path = require('path');
 
 const p = path.join(__dirname, '..', 'data', 'cart.json');
 
 module.exports = class Cart {
-    // This static method will see if there is already the product inside the Cart data. If there is, 
-    // then the quantity must me updated and if not it has to be added
     static addProduct(id, price) {
         fs.readFile(p, (err, fileContent) => {
             let cart = { products: [], totalPrice: 0 };

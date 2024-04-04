@@ -52,7 +52,6 @@ module.exports = class Product {
     }
 
     save() {
-        // Each product needs to have an unique id in order to be identified
         this.id = Math.random().toString();
         fs.readFile(p, (err, fileContent) => {
             let products = [];

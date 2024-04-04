@@ -7,8 +7,7 @@ const router = express.Router();
 
 router.get("/", shopController.getIndex);
 router.get("/products", productsController.getProducts);
-// the : after /products/ will tell express that everything after that can be stored inside
-// "productID"
+
 router.get("/products/:productID", productsController.getProduct);
 
 router.get("/cart", shopController.getCart);
