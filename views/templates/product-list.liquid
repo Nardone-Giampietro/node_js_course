@@ -16,18 +16,19 @@
                         </h1>
                     </header>
                     <div class="card__image">
-                        <img src="https://cdn.pixabay.com/photo/2023/06/16/11/47/books-8067850_960_720.jpg" alt="">
+                        <img src="{{ product.imageURL }}" alt="">
                     </div>
                     <div class="card__content">
                         <h2 class="product__price">
-                            $19.99
+                            ${{ product.price }}
                         </h2>
                         <p class="product__description">
-                            Description
+                            {{ product.description }}
                         </p>
                     </div>
                     <div class="card__actions">
-                        <button class="btn">Add to Cart</button>
+                        <a href="/products/{{ product.id }}" class="btn">Details</a>
+                        {% render 'add-to-cart', product: product %}
                     </div>
                 </article>
             {% endfor %}

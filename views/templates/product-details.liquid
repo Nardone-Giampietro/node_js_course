@@ -1,0 +1,18 @@
+{% layout 'main-layout' %}
+
+{% block content %}
+<div class="center">
+    <h1>{{ product.title }}</h1>
+    <hr>
+    <div>
+        <img src="{{ product.imageURL }}" alt="">
+    </div>
+    <h2>
+        {{ product.price }}
+    </h2>
+    <p>
+        {{ product.description }}
+    </p>
+    {% render 'add-to-cart', product: product %}
+</div>
+{% endblock %}

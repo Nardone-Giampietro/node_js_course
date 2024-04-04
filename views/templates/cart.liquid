@@ -1,0 +1,18 @@
+{% layout 'main-layout' %}
+
+{% block content %}
+    {% if cart.products.length >= 1 %}
+        <ul>
+            {% for item in cart.products %}
+                <li>
+                    <p>{{ item.title }} ({{ item.qty }})</p>
+                    <form action="/cart-delete-item" method="POST">
+                        <input type="hidden" name="productId" value={{ item.id }}>
+                        <button type="submit" class="btn">Delete</button>
+                    </form>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <h1>There are no products in your Cart</h1>
+    {% endif %}
+{% endblock %}

@@ -11,7 +11,9 @@ const { Liquid } = require('liquidjs');
 
 const app = express();
 const engine = new Liquid({
-    root: ['views/', 'views/layouts', 'views/partials'],
+    root: ['views/'],
+    layouts: ['views/layouts/'],
+    partials: ['views/partials'],
     extname: '.liquid'
 });
 
