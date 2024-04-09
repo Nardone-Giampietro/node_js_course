@@ -2,22 +2,25 @@ const Product = require('../models/product');
 
 exports.getProducts = (req, res, next) => {
     Product.fetchAll()
-        .then(products => {
+        .then(([results, fields]) => {
             res.render('templates/product-list', {
-                products: products,
+                products: results,
                 pageTitle: 'Shop',
                 path: '/products'
             });
+        })
+        .catch(err => {
+            console.log(err);
         });
 };
 
 exports.getProduct = (req, res, next) => {
     const productId = req.params.productID;
     Product.findById(productId)
-        .then(foundProduct => {
+        .then(([foundProduct, fields]) => {
             res.render('templates/product-details', {
-                product: foundProduct,
-                pageTitle: foundProduct.title,
+                product: foundProduct[0],
+                pageTitle: foundProduct[0].title,
                 path: `/products`
             });
         })
@@ -30,10 +33,10 @@ exports.getProduct = (req, res, next) => {
 exports.getProductEdit = (req, res, next) => {
     const productId = req.params.productID;
     Product.findById(productId)
-        .then(foundProduct => {
+        .then(([foundProduct, results]) => {
             res.render('templates/edit-product', {
-                product: foundProduct,
-                pageTitle: foundProduct.title,
+                product: foundProduct[0],
+                pageTitle: foundProduct[0].title,
                 path: `/admin/edit-product`
             });
         })
@@ -47,9 +50,9 @@ exports.postProductEdit = (req, res, next) => {
     const id = req.body.productID;
     const title = req.body.title;
     const imageUrl = req.body.imageUrl;
-    const descrition = req.body.description;
+    const description = req.body.description;
     const price = req.body.price;
-    Product.update(id, title, imageUrl, descrition, price)
+    Product.update(id, title, imageUrl, description, price)
         .then(() => {
             res.redirect("/admin/products");
         })
@@ -92,9 +95,14 @@ exports.getAddProduct = (req, res, next) => {
 exports.postAddProduct = (req, res, next) => {
     const title = req.body.title;
     const imageUrl = req.body.imageUrl;
-    const descrition = req.body.description;
+    const description = req.body.description;
     const price = req.body.price;
-    const product = new Product(title, imageUrl, descrition, price);
-    product.save();
-    res.redirect('/');
+    const product = new Product(title, imageUrl, description, price);
+    product.add()
+        .then(([results, fields]) => {
+            res.redirect('/');
+        })
+        .catch(err => {
+            console.log(err);
+        })
 };

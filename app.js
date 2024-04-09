@@ -1,6 +1,8 @@
 const http = require("http");
 const path = require("path");
 
+const db = require('./util/database');
+
 const express = require("express");
 
 const { router: adminRouters } = require("./routes/admin");
