@@ -1,10 +1,11 @@
 const Product = require('../models/product');
+const {where} = require("sequelize");
 
 exports.getProducts = (req, res, next) => {
-    Product.fetchAll()
-        .then(([results, fields]) => {
+    req.user.getProducts({raw: true})
+        .then(products => {
             res.render('templates/product-list', {
-                products: results,
+                products: products,
                 pageTitle: 'Shop',
                 path: '/products'
             });
@@ -16,32 +17,37 @@ exports.getProducts = (req, res, next) => {
 
 exports.getProduct = (req, res, next) => {
     const productId = req.params.productID;
-    Product.findById(productId)
-        .then(([foundProduct, fields]) => {
-            res.render('templates/product-details', {
-                product: foundProduct[0],
-                pageTitle: foundProduct[0].title,
-                path: `/products`
-            });
+    Product.findOne({where: {id: productId}, raw: true})
+        .then(product => {
+            if (product === null) {
+                console.log("Product Not Found");
+                res.redirect(`/`);
+            } else {
+                res.render('templates/product-details', {
+                    product: product,
+                    pageTitle: product.title,
+                    path: `/products`
+                });
+            }
         })
-        .catch(e => {
-            console.log("Product not found:", e);
+        .catch(error => {
+            console.log(error);
             res.redirect('/');
         });
 };
 
 exports.getProductEdit = (req, res, next) => {
     const productId = req.params.productID;
-    Product.findById(productId)
-        .then(([foundProduct, results]) => {
+    req.user.getProducts({where: {id: productId}, raw: true})
+        .then(products => {
             res.render('templates/edit-product', {
-                product: foundProduct[0],
-                pageTitle: foundProduct[0].title,
+                product: products[0],
+                pageTitle: products[0].title,
                 path: `/admin/edit-product`
             });
         })
-        .catch(e => {
-            console.log("Product not found:", e);
+        .catch(error => {
+            console.log(error);
             res.redirect('/');
         });
 };
@@ -52,37 +58,47 @@ exports.postProductEdit = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    Product.update(id, title, imageUrl, description, price)
+    Product.update({
+        title: title,
+        imageURL: imageUrl,
+        description: description,
+        price: price,
+    }, {
+        where: {
+            id: id
+        }
+    })
         .then(() => {
             res.redirect("/admin/products");
         })
-        .catch(e => {
-            console.log(e);
+        .catch(error => {
+            console.log(error);
             res.redirect('/');
         });
 };
 
 exports.postProductDelete = (req, res, next) => {
     const id = req.body.productID;
-    Product.update(id, null, null, null, null, del = true)
+    Product.destroy({where: {id: id}})
         .then(() => {
             res.redirect("/admin/products");
         })
-        .catch(e => {
-            console.log(e);
+        .catch(error => {
+            console.log(error);
             res.redirect("/admin/products");
         });
 };
 
 exports.getAdminProducts = (req, res, next) => {
-    Product.fetchAll()
+    Product.findAll({raw: true})
         .then(products => {
             res.render('templates/products', {
                 products: products,
                 pageTitle: 'Admin Products',
                 path: '/admin/products'
             });
-        });
+        })
+        .catch(error => console.log(error));
 };
 
 exports.getAddProduct = (req, res, next) => {
@@ -97,12 +113,15 @@ exports.postAddProduct = (req, res, next) => {
     const imageUrl = req.body.imageUrl;
     const description = req.body.description;
     const price = req.body.price;
-    const product = new Product(title, imageUrl, description, price);
-    product.add()
-        .then(([results, fields]) => {
-            res.redirect('/');
+    req.user
+        .createProduct({
+            title: title,
+            imageURL: imageUrl,
+            description: description,
+            price: price
         })
-        .catch(err => {
-            console.log(err);
+        .then(result => {
+            res.redirect("/admin/products");
         })
+        .catch(error => console.log(error));
 };

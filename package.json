@@ -19,7 +19,9 @@
     "express-handlebars": "^7.1.2",
     "liquidjs": "^10.10.2",
     "mysql2": "^3.9.3",
-    "pug": "^3.0.2"
+    "pug": "^3.0.2",
+    "sequelize": "^6.37.2",
+    "validator": "^13.11.0"
   },
   "nodemonConfig": {
     "ignore": [

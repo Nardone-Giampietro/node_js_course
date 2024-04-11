@@ -1,67 +1,32 @@
-const fs = require('fs');
-const path = require('path');
-const Cart = require('./cart');
-const db = require('../util/database');
+const {Sequelize, DataTypes} = require("sequelize");
 
-const p = path.join(__dirname, '..', 'data', 'products.json');
+const sequelize = require("../util/database");
 
-module.exports = class Product {
-    constructor(title, imageURL, description, price) {
-        this.title = title;
-        this.imageURL = imageURL;
-        this.description = description;
-        this.price = Number(price);
+const Product = sequelize.define("product", {
+    id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        allowNull: false,
+        primaryKey: true,
+    },
+    title:{
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    price : {
+        type: DataTypes.DOUBLE,
+        allowNull: false,
+    },
+    imageURL: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    description:{
+        type: DataTypes.STRING,
+        allowNull: false,
     }
+});
 
-    add() {
-        return db.execute(`INSERT INTO products (title, price, description, imageURL) VALUES (?, ?, ?, ?)`,
-            [this.title, this.price, this.description, this.imageURL]
-        );
-    }
+module.exports = Product;
 
-    static fetchAll() {
-        return db.execute('SELECT * FROM products');
-    }
 
-    static fetchOnlyCartProducts(cart) {
-        /**
-         *  return cartItems =
-         *      {
-         *          products: [
-         *              id: **,
-         *              title: **,
-         *              description: **,
-         *              price: **,
-         *              qty: **,
-         *          ],
-         *          totalPrice: **   
-         *      }
-         */
-        const cartItems = { ...cart };
-        return this.fetchAll()
-            .then(allProducts => {
-                return new Promise((resolve, reject) => {
-                    if (cartItems.products.length >= 1) {
-                        for (let product of allProducts) {
-                            const cartItemIndex = cartItems.products.findIndex(el => el.id === product.id);
-                            if (cartItemIndex >= 0) {
-                                Object.assign(cartItems.products[cartItemIndex], {
-                                    title: product.title,
-                                    imageURL: product.imageURL,
-                                    description: product.description,
-                                    price: product.price
-                                });
-                            }
-                        }
-                        resolve(cartItems);
-                    } else {
-                        resolve(cartItems);
-                    }
-                });
-            });
-    }
-
-    static findById(id) {
-        return db.execute('SELECT * FROM products WHERE products.id = ?', [id]);
-    }
-} 
