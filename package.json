@@ -18,6 +18,7 @@
     "express": "^4.19.2",
     "express-handlebars": "^7.1.2",
     "liquidjs": "^10.10.2",
+    "mongodb": "^6.5.0",
     "mysql2": "^3.9.3",
     "pug": "^3.0.2"
   },

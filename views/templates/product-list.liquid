@@ -6,34 +6,34 @@
 {% endblock %}
 
 {% block content %}
-    {% if products.length > 0 %}
-        <div class="grid">
-            {% for product in products %}
-                <article class="card product-item">
-                    <header class="card__header">
-                        <h1 class="product__title">
-                            {{ product.title }}
-                        </h1>
-                    </header>
-                    <div class="card__image">
-                        <img src="{{ product.imageURL }}" alt="">
-                    </div>
-                    <div class="card__content">
-                        <h2 class="product__price">
-                            ${{ product.price }}
-                        </h2>
-                        <p class="product__description">
-                            {{ product.description }}
-                        </p>
-                    </div>
-                    <div class="card__actions">
-                        <a href="/products/{{ product.id }}" class="btn">Details</a>
-                        {% render 'add-to-cart', product: product %}
-                    </div>
-                </article>
-            {% endfor %}
-        </div>
-    {% else %}
-        <h1>There are no products</h1>
-    {% endif %}
+{% if products.length > 0 %}
+    <div class="grid">
+        {% for product in products %}
+            <article class="card product-item">
+                <header class="card__header">
+                    <h1 class="product__title">
+                        {{ product.title }}
+                    </h1>
+                </header>
+                <div class="card__image">
+                    <img src="{{ product.imageURL }}" alt="">
+                </div>
+                <div class="card__content">
+                    <h2 class="product__price">
+                        ${{ product.price }}
+                    </h2>
+                    <p class="product__description">
+                        {{ product.description }}
+                    </p>
+                </div>
+                <div class="card__actions">
+                    <a href="/products/{{ product._id }}" class="btn">Details</a>
+                    {% render 'add-to-cart', product: product %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <h1>There are no products</h1>
+{% endif %}
 {% endblock %}

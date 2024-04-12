@@ -1,67 +1,71 @@
-const fs = require('fs');
-const path = require('path');
-const Cart = require('./cart');
-const db = require('../util/database');
+const {mongoConnect, getDB} = require('../util/database');
+const {ObjectId} = require("mongodb");
 
-const p = path.join(__dirname, '..', 'data', 'products.json');
-
-module.exports = class Product {
-    constructor(title, imageURL, description, price) {
+class Product {
+    constructor(title, price, description, imageURL, userId) {
         this.title = title;
-        this.imageURL = imageURL;
+        this.price = price;
         this.description = description;
-        this.price = Number(price);
+        this.imageURL = imageURL;
+        this._userId = userId;
     }
 
-    add() {
-        return db.execute(`INSERT INTO products (title, price, description, imageURL) VALUES (?, ?, ?, ?)`,
-            [this.title, this.price, this.description, this.imageURL]
-        );
+    static deleteProduct(id) {
+        const db = getDB();
+        const collection = db.collection('products');
+        const productId = new ObjectId(id);
+        return collection.deleteOne({_id: productId});
     }
 
-    static fetchAll() {
-        return db.execute('SELECT * FROM products');
+    static updateProduct(id, title, imageUrl, description, price) {
+        const db = getDB();
+        const collection = db.collection("products");
+        const updatedData = {
+            title: title,
+            price: price,
+            description: description,
+            imageURL: imageUrl,
+        }
+        const productId = new ObjectId(id);
+        const filter = {_id: productId};
+        return collection.updateOne(filter, {$set: updatedData});
     }
 
-    static fetchOnlyCartProducts(cart) {
-        /**
-         *  return cartItems =
-         *      {
-         *          products: [
-         *              id: **,
-         *              title: **,
-         *              description: **,
-         *              price: **,
-         *              qty: **,
-         *          ],
-         *          totalPrice: **   
-         *      }
-         */
-        const cartItems = { ...cart };
-        return this.fetchAll()
-            .then(allProducts => {
-                return new Promise((resolve, reject) => {
-                    if (cartItems.products.length >= 1) {
-                        for (let product of allProducts) {
-                            const cartItemIndex = cartItems.products.findIndex(el => el.id === product.id);
-                            if (cartItemIndex >= 0) {
-                                Object.assign(cartItems.products[cartItemIndex], {
-                                    title: product.title,
-                                    imageURL: product.imageURL,
-                                    description: product.description,
-                                    price: product.price
-                                });
-                            }
-                        }
-                        resolve(cartItems);
-                    } else {
-                        resolve(cartItems);
-                    }
-                });
-            });
+    static async fetchProducts() {
+        const db = getDB();
+        const collection = db.collection("products");
+        const findProduct = await collection.find();
+        const products = [];
+        for await (const product of findProduct) {
+            products.push(product);
+        }
+        ;
+        return Promise.resolve(products);
     }
 
-    static findById(id) {
-        return db.execute('SELECT * FROM products WHERE products.id = ?', [id]);
+    static fetchProduct(productId) {
+        const db = getDB();
+        const id = new ObjectId(productId);
+        return db.collection("products").findOne({_id: id});
     }
-} 
+
+    save() {
+        const db = getDB();
+        const userId = new ObjectId(this._userId);
+        return db.collection('products').insertOne(
+            {
+                title: this.title,
+                price: this.price,
+                description: this.description,
+                imageURL: this.imageURL,
+                _userId: userId
+            }
+        )
+            .then(result => {
+                console.log("Product Added");
+            })
+            .catch(err => console.log(err));
+    }
+}
+
+module.exports = Product;
