@@ -31,11 +31,10 @@ app.use(express.static(path.join(__dirname, "public")))
 app.use((req, res, next) => {
     User.findUser('661973a3ef60ed4a98981023')
         .then(user => {
-            req.user = user;
+            req.user = new User(user.username, user.email, user._id, user.cart);
             next();
         })
         .catch(err => console.log(err));
-    next();
 });
 
 app.use('/admin', adminRouters);

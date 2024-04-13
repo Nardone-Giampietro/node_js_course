@@ -1,5 +1,16 @@
-{%  layout 'main-layout' %}
+{% layout 'main-layout' %}
 
 {% block content %}
-    <h1>This is the order page</h1>
+<ul>
+    {% for order in orders %}
+        <li>
+            <h1>{{ order._id }}</h1>
+            <ul>
+                {% for item in order.items %}
+                    <h3>{{ item.title }} ({{ item.quantity }})</h3>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
 {% endblock %}

@@ -13,8 +13,14 @@ class Product {
     static deleteProduct(id) {
         const db = getDB();
         const collection = db.collection('products');
+        const userCollection = db.collection('users');
         const productId = new ObjectId(id);
-        return collection.deleteOne({_id: productId});
+        return collection.deleteOne({_id: productId})
+            .then((result) => {
+                return userCollection
+                    .updateMany({}, {$pull: {"cart.items": {_productId: productId}}});
+            })
+            .catch(error => console.log(error));
     }
 
     static updateProduct(id, title, imageUrl, description, price) {
@@ -37,7 +43,7 @@ class Product {
         const findProduct = await collection.find();
         const products = [];
         for await (const product of findProduct) {
-            products.push(product);
+            products.push(await product);
         }
         ;
         return Promise.resolve(products);

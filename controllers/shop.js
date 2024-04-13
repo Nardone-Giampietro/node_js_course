@@ -1,4 +1,3 @@
-const Cart = require('../models/cart');
 const Product = require('../models/product');
 
 
@@ -10,13 +9,10 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-    Cart.getCartProducts()
+    req.user.fetchCart()
         .then(cart => {
-            return Product.fetchOnlyCartProducts(cart);
-        })
-        .then(cartItems => {
             res.render('templates/cart', {
-                cart: cartItems,
+                cart: cart,
                 pageTitle: 'Cart',
                 path: '/cart'
             });
@@ -29,35 +25,53 @@ exports.getCart = (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findById(prodId)
+    Product.fetchProduct(prodId)
         .then(foundProduct => {
-            Cart.addProduct(prodId, foundProduct.price);
-            res.redirect('/cart');
+            return req.user.addProductToCart(foundProduct);
+        })
+        .then(result => {
+            console.log(result);
+            res.redirect('/cart')
+        })
+        .catch(error => {
+            console.log(error)
         });
 };
 
 exports.postCartDelete = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findById(prodId)
-        .then(foundProduct => {
-            return Cart.deleteProduct(prodId, foundProduct.price);
-        })
+    req.user.deleteCartItem(prodId)
         .then(() => {
             res.redirect('/cart');
+        })
+        .catch(error => {
+            console.log(error);
+        })
+};
+
+
+exports.postOrder = (req, res, next) => {
+    req.user.postOrders()
+        .then(() => {
+            res.redirect('/orders');
+        })
+        .catch(error => {
+            console.log(error)
         });
 };
 
-
-exports.getCheckout = (req, res, next) => {
-    res.render('templates/checkout', {
-        pageTitle: 'Checkout',
-        path: '/checkout'
-    })
-};
-
 exports.getOrders = (req, res, next) => {
-    res.render('templates/orders', {
-        pageTitle: 'Orders',
-        path: '/orders'
-    })
+    req.user.getOrders()
+        .then(orders => {
+            console.log(orders);
+            res.render('templates/orders', {
+                orders: orders,
+                pageTitle: 'Orders',
+                path: '/orders'
+            })
+        })
+        .catch(error => {
+            console.log(error)
+        });
+
 };
