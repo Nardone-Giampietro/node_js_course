@@ -14,10 +14,12 @@
   },
   "dependencies": {
     "body-parser": "^1.20.2",
+    "dotenv": "^16.4.5",
     "ejs": "^3.1.9",
     "express": "^4.19.2",
     "express-handlebars": "^7.1.2",
     "liquidjs": "^10.10.2",
+    "mongoose": "^8.3.5",
     "mysql2": "^3.9.3",
     "pug": "^3.0.2"
   },

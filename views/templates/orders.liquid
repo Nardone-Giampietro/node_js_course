@@ -1,5 +1,19 @@
-{%  layout 'main-layout' %}
+{% layout 'main-layout' %}
+{% block styles %}
+<link rel="stylesheet" href="/css/orders.css">
+{% endblock %}
 
 {% block content %}
-    <h1>This is the order page</h1>
+<ul class="orders">
+    {% for order in orders %}
+        <li class="orders__item">
+            <h1>{{ order._id }}</h1>
+            <ul class="orders__products">
+                {% for item in order.products %}
+                    <p class="orders__products-item">{{ item.productId.title }} ({{ item.quantity }})</p>
+                {% endfor %}
+            </ul>
+        </li>
+    {% endfor %}
+</ul>
 {% endblock %}
