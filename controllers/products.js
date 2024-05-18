@@ -6,7 +6,8 @@ exports.getProducts = (req, res, next) => {
             res.render('templates/product-list', {
                 products: products,
                 pageTitle: 'Shop',
-                path: '/products'
+                path: '/products',
+                isAuthenticated: req.isAuthenticated
             });
         })
         .catch(err => {
@@ -24,7 +25,8 @@ exports.getProduct = (req, res, next) => {
             res.render('templates/product-details', {
                 product: product,
                 pageTitle: product.title,
-                path: `/products`
+                path: `/products`,
+                isAuthenticated: req.isAuthenticated,
             });
         })
         .catch(e => {
@@ -40,7 +42,8 @@ exports.getProductEdit = (req, res, next) => {
             res.render('templates/edit-product', {
                 product: product,
                 pageTitle: product.title,
-                path: `/admin/edit-product`
+                path: `/admin/edit-product`,
+                isAuthenticated: req.isAuthenticated
             });
         })
         .catch(e => {
@@ -79,7 +82,8 @@ exports.getAdminProducts = (req, res, next) => {
             res.render('templates/products', {
                 products: products,
                 pageTitle: 'Admin Products',
-                path: '/admin/products'
+                path: '/admin/products',
+                isAuthenticated: req.isAuthenticated
             });
         });
 };
@@ -87,7 +91,8 @@ exports.getAdminProducts = (req, res, next) => {
 exports.getAddProduct = (req, res, next) => {
     res.render('templates/add-product', {
         pageTitle: 'Add Product',
-        path: '/admin/add-product'
+        path: '/admin/add-product',
+        isAuthenticated: req.isAuthenticated
     });
 };
 
@@ -96,7 +101,9 @@ exports.postAddProduct = (req, res, next) => {
     product.userId = req.user.toObject()._id;
     product.save()
         .then(result => {
-            res.status(201).redirect('/');
+            res.status(201).redirect('/', {
+                isAuthenticated: req.isAuthenticated
+            });
         })
         .catch(err => {
             console.log(err);

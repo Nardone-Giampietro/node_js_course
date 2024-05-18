@@ -3,10 +3,12 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 
 exports.getIndex = (req, res, next) => {
+    const isAuth = req.cookies.token;
     res.render('templates/index', {
         user: req.user.toObject(),
         pageTitle: 'Home',
-        path: '/'
+        path: '/',
+        isAuth: isAuth
     })
 };
 
@@ -19,7 +21,8 @@ exports.getCart = (req, res, next) => {
             res.render('templates/cart', {
                 cart: result.cart.items,
                 pageTitle: 'Cart',
-                path: '/cart'
+                path: '/cart',
+                isAuthenticated: req.isAuthenticated
             });
         })
         .catch(e => {
@@ -61,7 +64,8 @@ exports.getOrders = (req, res, next) => {
             res.render('templates/orders', {
                 orders: result,
                 pageTitle: 'Orders',
-                path: '/orders'
+                path: '/orders',
+                isAuthenticated: req.isAuthenticated
             })
         })
 };
