@@ -1,5 +1,7 @@
 <form action="/cart" method="POST">
     <input type="hidden" name="productId" value={{ product._id }}>
     <input type="hidden" name="productPrice" value={{ product.price }}>
-    <button type="submit" class="btn">Add to Cart</button>
+    {% if isAuthenticated %}
+        <button type="submit" class="btn">Add to Cart</button>
+    {% endif %}
 </form>

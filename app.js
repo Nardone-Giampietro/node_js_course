@@ -3,6 +3,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 const mongoose = require("mongoose");
 const express = require("express");
+const session = require("express-session");
+const MongoStore = require('connect-mongo');
 const { router: adminRouters } = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
@@ -21,21 +23,20 @@ const engine = new Liquid({
     extname: '.liquid'
 });
 
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({ mongoUrl: process.env.DATABASE_URI })
+}));
+
 app.engine('liquid', engine.express());
 app.set('view engine', 'liquid');
 
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")))
-
-app.use((req, res, next)=>{
-    User.findById("6647725919a66acfc53021c2")
-        .then(user => {
-            req.user = user;
-            next();
-        })
-        .catch(error => console.log(error));
-});
 
 app.use('/admin', adminRouters);
 app.use(shopRoutes);

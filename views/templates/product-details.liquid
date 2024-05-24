@@ -16,6 +16,6 @@
     <p>
         Made by: {{ product.userId.name }}
     </p>
-    {% render 'add-to-cart', product: product %}
+    {% render 'add-to-cart', product: product, isAuthenticated: isAuthenticated %}
 </div>
 {% endblock %}

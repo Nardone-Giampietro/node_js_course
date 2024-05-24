@@ -28,7 +28,7 @@
                     </div>
                     <div class="card__actions">
                         <a href="/products/{{ product._id }}" class="btn">Details</a>
-                        {% render 'add-to-cart', product: product %}
+                        {% render 'add-to-cart', product: product, isAuthenticated: isAuthenticated %}
                     </div>
                 </article>
             {% endfor %}

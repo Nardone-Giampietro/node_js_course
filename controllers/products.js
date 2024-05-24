@@ -7,7 +7,7 @@ exports.getProducts = (req, res, next) => {
                 products: products,
                 pageTitle: 'Shop',
                 path: '/products',
-                isAuthenticated: req.isAuthenticated
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch(err => {
@@ -26,7 +26,7 @@ exports.getProduct = (req, res, next) => {
                 product: product,
                 pageTitle: product.title,
                 path: `/products`,
-                isAuthenticated: req.isAuthenticated,
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch(e => {
@@ -43,7 +43,7 @@ exports.getProductEdit = (req, res, next) => {
                 product: product,
                 pageTitle: product.title,
                 path: `/admin/edit-product`,
-                isAuthenticated: req.isAuthenticated
+                isAuthenticated: req.session.isLoggedIn
             });
         })
         .catch(e => {
@@ -83,7 +83,7 @@ exports.getAdminProducts = (req, res, next) => {
                 products: products,
                 pageTitle: 'Admin Products',
                 path: '/admin/products',
-                isAuthenticated: req.isAuthenticated
+                isAuthenticated: req.session.isLoggedIn
             });
         });
 };
@@ -92,18 +92,16 @@ exports.getAddProduct = (req, res, next) => {
     res.render('templates/add-product', {
         pageTitle: 'Add Product',
         path: '/admin/add-product',
-        isAuthenticated: req.isAuthenticated
+        isAuthenticated: req.session.isLoggedIn
     });
 };
 
 exports.postAddProduct = (req, res, next) => {
     const product = new Product(req.body);
-    product.userId = req.user.toObject()._id;
+    product.userId = req.session.user._id;
     product.save()
         .then(result => {
-            res.status(201).redirect('/', {
-                isAuthenticated: req.isAuthenticated
-            });
+            res.status(201).redirect('/');
         })
         .catch(err => {
             console.log(err);
