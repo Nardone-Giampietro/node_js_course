@@ -24,6 +24,7 @@
             <textarea name="description" id="description" cols="30" rows="10">{{ product.description }}</textarea>
         </div>
         <input type="hidden" name="productId" value={{ product._id }}>
+        <input type="hidden" name="_csrf" value={{ csrfToken }}>
         <button class="btn" type="submit">Edit Product</button>
     </form>
 {% endblock %}

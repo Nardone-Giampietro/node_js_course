@@ -6,8 +6,7 @@ exports.getProducts = (req, res, next) => {
             res.render('templates/product-list', {
                 products: products,
                 pageTitle: 'Shop',
-                path: '/products',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/products'
             });
         })
         .catch(err => {
@@ -25,8 +24,7 @@ exports.getProduct = (req, res, next) => {
             res.render('templates/product-details', {
                 product: product,
                 pageTitle: product.title,
-                path: `/products`,
-                isAuthenticated: req.session.isLoggedIn
+                path: `/products`
             });
         })
         .catch(e => {
@@ -42,8 +40,7 @@ exports.getProductEdit = (req, res, next) => {
             res.render('templates/edit-product', {
                 product: product,
                 pageTitle: product.title,
-                path: `/admin/edit-product`,
-                isAuthenticated: req.session.isLoggedIn
+                path: `/admin/edit-product`
             });
         })
         .catch(e => {
@@ -82,8 +79,7 @@ exports.getAdminProducts = (req, res, next) => {
             res.render('templates/products', {
                 products: products,
                 pageTitle: 'Admin Products',
-                path: '/admin/products',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/admin/products'
             });
         });
 };
@@ -91,8 +87,7 @@ exports.getAdminProducts = (req, res, next) => {
 exports.getAddProduct = (req, res, next) => {
     res.render('templates/add-product', {
         pageTitle: 'Add Product',
-        path: '/admin/add-product',
-        isAuthenticated: req.session.isLoggedIn
+        path: '/admin/add-product'
     });
 };
 

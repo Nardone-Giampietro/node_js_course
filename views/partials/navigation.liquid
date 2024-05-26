@@ -25,6 +25,7 @@
         <ul class="main-header__item-list">
             <li class="main-header__item">
                 <form action="/logout" method="POST">
+                    <input type="hidden" name="_csrf" value={{ csrfToken }}>
                     <button type="submit">Log Out</button>
                 </form>
             </li>
@@ -33,6 +34,9 @@
         <ul class="main-header__item-list">
             <li class="main-header__item">
                 <a class={% if path == '/login' %} "active" {% else %} "" {% endif %} href="/login">Login</a>
+            </li>
+            <li class="main-header__item">
+                <a class={% if path == '/signup' %} "active" {% else %} "" {% endif %} href="/signup">Signup</a>
             </li>
         </ul>
     {% endif %}

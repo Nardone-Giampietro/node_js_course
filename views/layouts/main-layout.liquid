@@ -3,7 +3,10 @@
 </head>
     <body>
         <header class="main-header">
-            {% render 'navigation', path: path, isAuthenticated: isAuthenticated %}
+            {% render 'navigation', path: path,
+                    isAuthenticated: isAuthenticated,
+                    csrfToken: csrfToken
+            %}
         </header>
         <main>
 

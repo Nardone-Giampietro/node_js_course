@@ -1,6 +1,9 @@
 {% layout 'main-layout' %}
 
 {% block content %}
+{% if errorMessage.length > 0 %}
+    <div class="user-message user-message--error">{{ errorMessage }}</div>
+{% endif %}
 {% if user %}
     <h1>Welcome {{ user }}</h1>
 {% else %}

@@ -14,7 +14,7 @@
         {{ product.description }}
     </p>
     <p>
-        Made by: {{ product.userId.name }}
+        Made by: {{ product.userId.email }}
     </p>
     {% render 'add-to-cart', product: product, isAuthenticated: isAuthenticated %}
 </div>

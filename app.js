@@ -10,10 +10,10 @@ const shopRoutes = require("./routes/shop");
 const authRoutes = require("./routes/auth");
 const cookieParser = require("cookie-parser");
 const errorController = require("./controllers/error");
-const User = require("./models/user");
-
+const csrf = require("csurf");
+const flash = require("connect-flash");
+const {protect} = require("./util/auth");
 const { Liquid } = require('liquidjs');
-const req = require("express/lib/request");
 
 const app = express();
 const engine = new Liquid({
@@ -23,6 +23,7 @@ const engine = new Liquid({
     extname: '.liquid'
 });
 
+const csrfProtection = csrf({});
 
 app.use(session({
     secret: process.env.SESSION_SECRET,
@@ -38,7 +39,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")))
 
-app.use('/admin', adminRouters);
+app.use(csrfProtection);
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLoggedIn;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
+app.use(flash());
+
+app.use('/admin', protect, adminRouters);
 app.use(shopRoutes);
 app.use(authRoutes);
 app.use(errorController.get404);

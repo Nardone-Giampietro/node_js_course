@@ -4,10 +4,9 @@ const Order = require('../models/order');
 
 exports.getIndex = (req, res, next) => {
     res.render('templates/index', {
-        user: req.session.isLoggedIn ? req.session.user.name : null,
+        user: req.session.isLoggedIn ? req.session.user.email : null,
         pageTitle: 'Home',
-        path: '/',
-        isAuthenticated: req.session.isLoggedIn
+        path: '/'
     })
 };
 
@@ -18,8 +17,7 @@ exports.getCart = (req, res, next) => {
             res.render('templates/cart', {
                 cart: user.cart.items.toObject(),
                 pageTitle: 'Cart',
-                path: '/cart',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/cart'
             });
         })
         .catch(err => console.log(err));
@@ -62,8 +60,7 @@ exports.getOrders = (req, res, next) => {
             res.render('templates/orders', {
                 orders: result,
                 pageTitle: 'Orders',
-                path: '/orders',
-                isAuthenticated: req.session.isLoggedIn
+                path: '/orders'
             })
         })
 };

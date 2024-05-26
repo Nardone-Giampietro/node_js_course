@@ -14,12 +14,14 @@
                     <h1>{{ item.productId.title }} ({{ item.quantity }})</h1>
                     <form class="form-control" action="/cart-delete-item" method="POST">
                         <input type="hidden" name="productId" value={{ item.productId._id }}>
-                        <button type="submit" class="btn">Delete</button>
+                        <input type="hidden" name="_csrf" value={{ csrfToken }}>
+                        <button type="submit" class="btn danger">Delete</button>
                     </form>
             {% endfor %}
         </ul>
         <form class="form-control" action="/orders" method="POST">
-            <button type="submit" class="btn centered">ORDER NOW</button>
+            <input type="hidden" name="_csrf" value={{ csrfToken }}>
+            <button type="submit" class="btn">ORDER NOW</button>
         </form>
     {% else %}
         <h1>There are no products in your Cart</h1>
