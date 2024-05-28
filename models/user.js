@@ -11,12 +11,19 @@ const userSchema = new Schema({
         type: String,
         required: true,
     },
+    resetToken: {
+        type: String
+    },
+    resetTokenExpiration:{
+        type: Date
+    },
     cart: {
         items: [{
             productId: {type: Schema.Types.ObjectId, ref: 'Product'},
             quantity: {type: Number, default: 0},
         }]
-    }
+    },
+
 });
 userSchema.index({email: 1});
 
