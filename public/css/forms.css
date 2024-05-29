@@ -16,7 +16,10 @@
   font: inherit;
   border-radius: 2px;
 }
-
+.form-control input.invalid,
+.form-control textarea.invalid {
+  border: 1px solid red;
+}
 .form-control input:focus,
 .form-control textarea:focus {
   outline-color: #00695c;

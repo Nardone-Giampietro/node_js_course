@@ -7,6 +7,9 @@
 
 {% block content %}
     <form class="product-form" action="/admin/edit-product" method="POST">
+        {% if errorMessage.length > 0 %}
+            <div class="user-message user-message--error">{{ errorMessage }}</div>
+        {% endif %}
         <div class="form-control">
             <label for="title">Title</label>
             <input type="text" name="title" id="title" value={{ product.title }}>
@@ -23,9 +26,40 @@
             <label for="description">Description</label>
             <textarea name="description" id="description" cols="30" rows="10">{{ product.description }}</textarea>
         </div>
-        <input type="hidden" name="productId" value={{ product._id }}>
+        <input type="hidden" name="productId" id="productId" value={{ product._id }}>
         <input type="hidden" name="_csrf" value={{ csrfToken }}>
         <button class="btn" type="submit">Edit Product</button>
     </form>
+{% endblock %}
+{% block scrypt %}
+<script type="text/javascript">
+    const title = document.getElementById("title");
+    const imageUrl = document.getElementById("imageUrl");
+    const price = document.getElementById("price");
+    const description =  document.getElementById("description");
+    const productId = document.getElementById("productId")
+    const oldInputs = {{ oldInputs | json }};
+    const validationErrors = {{ validationErrors | json }};
+
+    if (validationErrors){
+        const checkTitle = validationErrors.find(el => el.path === "title");
+        const checkImageUrl = validationErrors.find(el => el.path === "imageUrl");
+        const checkPrice = validationErrors.find(el => el.path === "price");
+        const checkDescription = validationErrors.find(el => el.path === "description");
+
+        title.classList = checkTitle ? "invalid" : "";
+        imageUrl.classList = checkImageUrl ? "invalid" : "";
+        price.classList = checkPrice ? "invalid" : "";
+        description.classList = checkDescription ? "invalid" : "";
+    }
+
+    if (oldInputs) {
+        title.value = oldInputs.title ? oldInputs.title : "";
+        price.value = oldInputs.price ? oldInputs.price : "";
+        imageUrl.value = oldInputs.imageUrl ? oldInputs.imageUrl : "";
+        description.value = oldInputs.description ? oldInputs.description : "";
+        productId.value = oldInputs.productId ? oldInputs.productId : "";
+    }
+</script>
 {% endblock %}
 

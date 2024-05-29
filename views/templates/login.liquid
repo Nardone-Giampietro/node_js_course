@@ -26,3 +26,21 @@
     <a href="/reset">Reset Password</a>
 </div>
 {% endblock %}
+{% block scrypt %}
+<script type="text/javascript">
+    const email =  document.getElementById("email");
+    const pass = document.getElementById("password");
+    const errors = {{ validationErrors | json }};
+    const oldInputs = {{ oldInputs | json }};
+    if (errors) {
+        const emailCheck = errors.find(el => el.path === "email");
+        const passCheck = errors.find(el => el.path === "password");
+        email.classList = emailCheck ? "invalid" : "";
+        pass.classList = passCheck ? "invalid" : "";
+    }
+    if (oldInputs){
+        email.value = oldInputs.email ? oldInputs.email : "";
+        pass.value = oldInputs.password ? oldInputs.password : "";
+    }
+</script>
+{% endblock %}

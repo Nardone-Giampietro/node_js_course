@@ -7,24 +7,55 @@
 
 {% block content %}
     <form class="product-form" action="/admin/add-product" method="POST">
+        {% if errorMessage.length > 0 %}
+            <div class="user-message user-message--error">{{ errorMessage }}</div>
+        {% endif %}
         <div class="form-control">
             <label for="title">Title</label>
-            <input type="text" name="title" id="title">
+            <input type="text" name="title" id="title" required>
         </div>
         <div class="form-control">
             <label for="imageUrl">Image URL</label>
-            <input type="text" name="imageUrl" id="imageUrl">
+            <input type="text" name="imageUrl" id="imageUrl" required>
         </div>
         <div class="form-control">
             <label for="price">Price</label>
-            <input type="number" min="0.0" name="price" id="price" step="0.01">
+            <input type="number" min="0.0" name="price" id="price" step="0.01" required>
         </div>
         <div class="form-control">
             <label for="description">Description</label>
-            <textarea name="description" id="description" cols="30" rows="10"></textarea>
+            <textarea name="description" id="description" cols="30" rows="10" required></textarea>
         </div>
         <input type="hidden" name="_csrf" value={{ csrfToken }}>
         <button class="btn" type="submit">Add Product</button>
     </form>
 {% endblock %}
+{% block scrypt %}
+<script type="text/javascript">
+    const title = document.getElementById("title");
+    const imageUrl = document.getElementById("imageUrl");
+    const price = document.getElementById("price");
+    const description =  document.getElementById("description");
+    const oldInputs = {{ oldInputs | json }};
+    const validationErrors = {{ validationErrors | json }};
 
+    if (validationErrors){
+        const checkTitle = validationErrors.find(el => el.path === "title");
+        const checkImageUrl = validationErrors.find(el => el.path === "imageUrl");
+        const checkPrice = validationErrors.find(el => el.path === "price");
+        const checkDescription = validationErrors.find(el => el.path === "description");
+
+        title.classList = checkTitle ? "invalid" : "";
+        imageUrl.classList = checkImageUrl ? "invalid" : "";
+        price.classList = checkPrice ? "invalid" : "";
+        description.classList = checkDescription ? "invalid" : "";
+    }
+
+    if (oldInputs) {
+        title.value = oldInputs.title ? oldInputs.title : "";
+        price.value = oldInputs.price ? oldInputs.price : "";
+        imageUrl.value = oldInputs.imageUrl ? oldInputs.imageUrl : "";
+        description.value = oldInputs.description ? oldInputs.description : "";
+    }
+</script>
+{% endblock %}
