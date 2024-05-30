@@ -11,7 +11,9 @@ exports.getProducts = (req, res, next) => {
             });
         })
         .catch(err => {
-            console.log(err);
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
         });
 };
 
@@ -28,9 +30,10 @@ exports.getProduct = (req, res, next) => {
                 path: `/products`
             });
         })
-        .catch(e => {
-            console.log("Product not found:", e);
-            res.redirect('/');
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
         });
 };
 
@@ -39,18 +42,23 @@ exports.getProductEdit = (req, res, next) => {
     const userId = req.session.user._id;
     Product.findOne({_id: productId, userId: userId}).lean()
         .then(product => {
-            res.render('templates/edit-product', {
-                product: product,
-                pageTitle: product.title,
-                path: `/admin/edit-product`,
-                errorMessage: null,
-                validationErrors: null,
-                oldInputs: null
-            });
+            if (product) {
+                res.render('templates/edit-product', {
+                    product: product,
+                    pageTitle: product.title,
+                    path: `/admin/edit-product`,
+                    errorMessage: null,
+                    validationErrors: null,
+                    oldInputs: null
+                });
+            } else {
+                throw new Error("Product Not Found");
+            }
         })
-        .catch(e => {
-            console.log("Product not found:", e);
-            res.redirect('/');
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
         });
 };
 
@@ -82,9 +90,10 @@ exports.postProductEdit = (req, res, next) => {
                 }
                 res.redirect("/admin/products");
             })
-            .catch(e => {
-                console.log(e);
-                res.redirect('/');
+            .catch(err => {
+                const error = new Error(err);
+                error.statusCode = 500;
+                return next(error);
             });
     }
 };
@@ -95,9 +104,10 @@ exports.postProductDelete = (req, res, next) => {
         .then(result => {
             res.redirect("/admin/products");
         })
-        .catch(e => {
-            console.log(e);
-            res.redirect("/admin/products");
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
         });
 };
 
@@ -146,8 +156,9 @@ exports.postAddProduct = (req, res, next) => {
                 res.status(201).redirect('/');
             })
             .catch(err => {
-                console.log(err);
-            })
+                const error = new Error(err);
+                error.statusCode = 500;
+                return next(error);
+            });
     }
-
 };

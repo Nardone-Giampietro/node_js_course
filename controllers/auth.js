@@ -14,7 +14,7 @@ exports.getLogin = (req, res) => {
     });
 };
 
-exports.postLogin = (req, res) => {
+exports.postLogin = (req, res, next) => {
     const result =  validationResult(req);
     if (!result.isEmpty()){
         return res.status(422).render('templates/login',
@@ -55,15 +55,19 @@ exports.postLogin = (req, res) => {
                     });
             }
         })
-        .catch(error => {
-            console.log(error);
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
         });
 }
 
-exports.postLogout = (req, res) => {
-    req.session.destroy((error) => {
-        if (error) {
-            console.log(error);
+exports.postLogout = (req, res, next) => {
+    req.session.destroy((err) => {
+        if (err) {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
         }
         res.redirect('/');
     });
@@ -79,7 +83,7 @@ exports.getSignup = (req, res) => {
     });
 }
 
-exports.postSignup = async (req, res) => {
+exports.postSignup = async (req, res, next) => {
     const email = req.body.email;
     const password1 = req.body.password1;
     const result = validationResult(req);
@@ -113,7 +117,11 @@ exports.postSignup = async (req, res) => {
                 html: "<h1>Thanks for signing up!</h1>"
             });
         })
-        .catch(error => {console.log(error)})
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
+        })
 }
 
 exports.getReset = (req, res) => {
@@ -124,7 +132,7 @@ exports.getReset = (req, res) => {
     });
 }
 
-exports.postReset = (req, res) => {
+exports.postReset = (req, res, next) => {
     crypto.randomBytes(16, (err, buffer) => {
         if (err) {
             console.log(err);
@@ -151,14 +159,23 @@ exports.postReset = (req, res) => {
                                 <p>Click this link to reset the password</p>
                                 <a href="http://localhost:3000/reset-password/${token}">RESET</a>
                                 `
+                        })
+                        .catch(err => {
+                            const error = new Error(err);
+                            error.statusCode = 500;
+                            return next(error);
                         });
                     });
             })
-            .catch(error => {console.log(error);});
+            .catch(err => {
+                const error = new Error(err);
+                error.statusCode = 500;
+                return next(error);
+            });
     });
 }
 
-exports.getResetPassword = (req, res) => {
+exports.getResetPassword = (req, res, next) => {
     const token = req.params.token;
     User.findOne({resetToken: token, resetTokenExpiration: {$gte: Date.now()}})
         .then(user => {
@@ -174,10 +191,14 @@ exports.getResetPassword = (req, res) => {
                 userId: user._id.toString()
             });
         })
-        .catch(error => {console.log(error);});
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
+        });
 }
 
-exports.postResetPassword = async (req, res ) => {
+exports.postResetPassword = async (req, res, next ) => {
     const userId = req.body.userId;
     const newPassword = await hashedPassword(req.body.password1);
     const token = req.params.token;
@@ -192,5 +213,9 @@ exports.postResetPassword = async (req, res ) => {
                 res.redirect("/login");
             }
         })
-        .catch(error => {console.log(error);});
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
+        });
 }

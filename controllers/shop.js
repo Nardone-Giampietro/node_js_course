@@ -20,7 +20,11 @@ exports.getCart = (req, res, next) => {
                 path: '/cart'
             });
         })
-        .catch(err => console.log(err));
+        .catch(err =>{
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
+        });
 };
 
 exports.postCart =  (req, res, next) => {
@@ -31,7 +35,11 @@ exports.postCart =  (req, res, next) => {
             console.log("Product added to cart.");
             res.redirect('/cart');
         })
-        .catch(err => console.log(err));
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
+        });
 };
 
 exports.postCartDelete = (req, res, next) => {
@@ -46,7 +54,11 @@ exports.postCartDelete = (req, res, next) => {
             console.log("Product deleted from cart.");
             res.redirect('/cart');
         })
-        .catch(e => {console.log(e); res.redirect('/');});
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
+        });
 };
 
 
@@ -62,6 +74,11 @@ exports.getOrders = (req, res, next) => {
                 pageTitle: 'Orders',
                 path: '/orders'
             })
+        })
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
         })
 };
 
@@ -81,5 +98,9 @@ exports.postOrders = async (req, res, next) => {
         .then( result =>{
             res.status(201).redirect('/orders');
             })
-        .catch(e => {console.log(e); res.redirect('/');});
+        .catch(err => {
+            const error = new Error(err);
+            error.statusCode = 500;
+            return next(error);
+        });
 };

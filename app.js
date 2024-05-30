@@ -52,6 +52,11 @@ app.use('/admin', protect, adminRouters);
 app.use(shopRoutes);
 app.use(authRoutes);
 app.use(errorController.get404);
+app.use((error, req, res) => {
+    if (error.httpStatusCode === 500){
+        res.redirect("/500");
+    }
+});
 
 mongoose.connect(process.env.DATABASE_URI)
     .then(async result => {
