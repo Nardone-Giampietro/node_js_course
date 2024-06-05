@@ -7,7 +7,7 @@
 <ul class="orders">
     {% for order in orders %}
         <li class="orders__item">
-            <h1>{{ order._id }}</h1>
+            <h1>{{ order._id }} - <a href="/orders/{{ order._id }}">Invoice</a></h1>
             <ul class="orders__products">
                 {% for item in order.products %}
                     <p class="orders__products-item">{{ item.productId.title }} ({{ item.quantity }})</p>

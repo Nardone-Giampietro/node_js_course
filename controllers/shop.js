@@ -1,6 +1,10 @@
 const User = require('../models/user');
 const Product = require('../models/product');
 const Order = require('../models/order');
+const {validationResult } = require('express-validator');
+const fs = require('fs');
+const path = require('path');
+const {generateInvoice} = require("../util/pdf_generator");
 
 exports.getIndex = (req, res, next) => {
     res.render('templates/index', {
@@ -84,15 +88,19 @@ exports.getOrders = (req, res, next) => {
 
 exports.postOrders = async (req, res, next) => {
     const user = await User.findById(req.session.user._id);
-    await user.populate("cart.items.productId", ["title"]);
+    await user.populate("cart.items.productId", ["title", "price"]);
     const items = user.cart.items.toObject();
-    const order = new Order({
+    const orderNew = new Order({
         userId: user.id,
         products: items,
     });
-    order.save()
-        .then(result => {
+    orderNew.save()
+        .then( order => {
             user.cart.items = [];
+            const orderId = order._id.toString();
+            const invoiceName = `invoice-${orderId}.pdf`;
+            const invoicePath = path.join("data", "invoices", invoiceName);
+            generateInvoice(order, invoicePath);
             return user.save()
         })
         .then( result =>{
@@ -104,3 +112,29 @@ exports.postOrders = async (req, res, next) => {
             return next(error);
         });
 };
+
+exports.getInvoice = (req, res, next) => {
+    const orderId = req.params.orderId;
+    const result = validationResult(req);
+
+    if (!result.isEmpty()){
+        const message = result.array()[0].msg;
+        switch (message) {
+            case "404":
+                return res.status(404).render('templates/404', {message: "File not Found."});
+            case "403":
+                return res.status(403).render('templates/403', {message: "Cannot access this File."});
+            case "500":
+                return res.status(500).render('templates/500', {message: "Database Error"});
+            case "400":
+                return res.status(400).render('templates/400', {message: "Invalid Input"});
+        }
+    }
+    const invoiceName = "invoice-" + orderId + ".pdf";
+    const invoicePath = path.join("data", "invoices", invoiceName);
+    const file = fs.createReadStream(invoicePath);
+    res.statusCode = 200;
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `inline; filename=${invoiceName}`);
+    file.pipe(res);
+}

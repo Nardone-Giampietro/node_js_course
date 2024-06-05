@@ -17,10 +17,6 @@ router.post("/add-product",
         .customSanitizer((value) => {
             return value.charAt(0).toUpperCase() + value.slice(1);
         }),
-    body("imageUrl", "Invalid URL")
-        .notEmpty()
-        .trim()
-        .isURL({allow_query_components: false}),
     body("price", "Invalid Price")
         .notEmpty()
         .trim()
@@ -42,10 +38,6 @@ router.post('/edit-product',
             .customSanitizer((value) => {
                 return value.charAt(0).toUpperCase() + value.slice(1);
             }),
-        body("imageUrl", "Invalid URL")
-            .notEmpty()
-            .trim()
-            .isURL({allow_query_components: false}),
         body("price", "Invalid Price")
             .notEmpty()
             .trim()

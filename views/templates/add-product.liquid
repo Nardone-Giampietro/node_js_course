@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-    <form class="product-form" action="/admin/add-product" method="POST">
+    <form class="product-form" action="/admin/add-product" method="POST" enctype="multipart/form-data">
         {% if errorMessage.length > 0 %}
             <div class="user-message user-message--error">{{ errorMessage }}</div>
         {% endif %}
@@ -14,9 +14,13 @@
             <label for="title">Title</label>
             <input type="text" name="title" id="title" required>
         </div>
-        <div class="form-control">
+        <!-- <div class="form-control">
             <label for="imageUrl">Image URL</label>
             <input type="text" name="imageUrl" id="imageUrl" required>
+        </div> -->
+        <div class="form-control">
+            <label for="image">Image</label>
+            <input type="file" name="image" id="image">
         </div>
         <div class="form-control">
             <label for="price">Price</label>
@@ -33,7 +37,7 @@
 {% block scrypt %}
 <script type="text/javascript">
     const title = document.getElementById("title");
-    const imageUrl = document.getElementById("imageUrl");
+    const image = document.getElementById("image");
     const price = document.getElementById("price");
     const description =  document.getElementById("description");
     const oldInputs = {{ oldInputs | json }};
@@ -41,12 +45,12 @@
 
     if (validationErrors){
         const checkTitle = validationErrors.find(el => el.path === "title");
-        const checkImageUrl = validationErrors.find(el => el.path === "imageUrl");
+        const checkImage = validationErrors.find(el => el.path === "image");
         const checkPrice = validationErrors.find(el => el.path === "price");
         const checkDescription = validationErrors.find(el => el.path === "description");
 
         title.classList = checkTitle ? "invalid" : "";
-        imageUrl.classList = checkImageUrl ? "invalid" : "";
+        image.classList = checkImage ? "invalid" : "";
         price.classList = checkPrice ? "invalid" : "";
         description.classList = checkDescription ? "invalid" : "";
     }
@@ -54,7 +58,7 @@
     if (oldInputs) {
         title.value = oldInputs.title ? oldInputs.title : "";
         price.value = oldInputs.price ? oldInputs.price : "";
-        imageUrl.value = oldInputs.imageUrl ? oldInputs.imageUrl : "";
+        // imageUrl.value = oldInputs.imageUrl ? oldInputs.imageUrl : "";
         description.value = oldInputs.description ? oldInputs.description : "";
     }
 </script>
