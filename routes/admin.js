@@ -49,6 +49,8 @@ router.post('/edit-product',
             .unescape()
     ],
     productsController.postProductEdit);
-router.post('/delete-product', productsController.postProductDelete);
+// router.post('/delete-product', productsController.postProductDelete);
+router.delete('/delete-product/:productId', productsController.asyncProductDelete);
+
 
 module.exports = { router };
