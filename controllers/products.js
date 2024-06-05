@@ -2,20 +2,43 @@ const Product = require('../models/product');
 const {validationResult } = require('express-validator');
 const {deleteFile} = require('../util/file');
 
-exports.getProducts = (req, res, next) => {
-    Product.find({}).lean()
-        .then(products => {
-            res.render('templates/product-list', {
-                products: products,
-                pageTitle: 'Shop',
-                path: '/products'
+const ITEMS_PER_PAGE= 2;
+
+exports.getProducts = async (req, res, next) => {
+    let page = Number(req.query.page) || 1;
+    let pagination;
+    let nSkip;
+    try {
+        const count = await Product.countDocuments({});
+        let quotient = Math.floor(count / ITEMS_PER_PAGE);
+        let remainder = count % ITEMS_PER_PAGE;
+        pagination = remainder > 0 ? quotient + 1 : quotient;
+        if (page > pagination || page < 0) {
+            page = 1;
+        }
+        nSkip = (page - 1) * ITEMS_PER_PAGE;
+        Product.find({})
+            .skip(nSkip)
+            .limit(ITEMS_PER_PAGE)
+            .lean()
+            .then(products => {
+                res.render('templates/product-list', {
+                    products: products,
+                    pageTitle: 'Shop',
+                    path: '/products',
+                    paginationNumber: pagination,
+                    currentPage: page
+                });
+            })
+            .catch(err => {
+                throw err;
             });
-        })
-        .catch(err => {
-            const error = new Error(err);
-            error.statusCode = 500;
-            return next(error);
-        });
+    }
+    catch (err) {
+        const error = new Error(err);
+        error.statusCode = 500;
+        return next(error);
+    }
 };
 
 exports.getProduct = (req, res, next) => {
@@ -119,16 +142,42 @@ exports.postProductDelete = (req, res, next) => {
         });
 };
 
-exports.getAdminProducts = (req, res, next) => {
+exports.getAdminProducts = async (req, res, next) => {
     const userId = req.session.user._id;
-    Product.find({userId: userId}).lean()
-        .then(products => {
-            res.render('templates/products', {
-                products: products,
-                pageTitle: 'Admin Products',
-                path: '/admin/products'
+    let page = Number(req.query.page) || 1;
+    let pagination;
+    let nSkip;
+    try {
+        const count = await Product.countDocuments({});
+        let quotient = Math.floor(count / ITEMS_PER_PAGE);
+        let remainder = count % ITEMS_PER_PAGE;
+        pagination = remainder > 0 ? quotient + 1 : quotient;
+        if (page > pagination || page < 0) {
+            page = 1;
+        }
+        nSkip = (page - 1) * ITEMS_PER_PAGE;
+        Product.find({userId: userId})
+            .skip(nSkip)
+            .limit(ITEMS_PER_PAGE)
+            .lean()
+            .then(products => {
+                res.render('templates/products', {
+                    products: products,
+                    pageTitle: 'Admin Products',
+                    path: '/admin/products',
+                    paginationNumber: pagination,
+                    currentPage: page
+                });
+            })
+            .catch(err => {
+                throw err;
             });
-        });
+    }
+    catch (err) {
+        const error = new Error(err);
+        error.statusCode = 500;
+        return next(error);
+    }
 };
 
 exports.getAddProduct = (req, res, next) => {

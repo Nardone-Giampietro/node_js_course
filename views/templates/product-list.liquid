@@ -36,6 +36,10 @@
                 </article>
             {% endfor %}
         </div>
+        {% render "pagination",
+                paginationNumber: paginationNumber,
+                currentPage: currentPage
+        %}
     {% else %}
         <h1>There are no products</h1>
     {% endif %}

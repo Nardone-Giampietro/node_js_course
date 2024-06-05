@@ -1,0 +1,10 @@
+<section class="pagination">
+    {% if paginationNumber > 1 %}
+        {% for i in (1 .. paginationNumber) %}
+            <a
+                class = "{% if i == currentPage %}active{% else %}{% endif %}"
+                href="?page={{ i }}">{{ i }}</a>
+        {% endfor %}
+    {% else %}
+    {% endif %}
+</section>
